@@ -17,6 +17,9 @@
 //
 package com.couchbase.lite.internal.fleece;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import java.util.List;
 import java.util.Map;
 
@@ -26,17 +29,20 @@ import com.couchbase.lite.LiteCoreException;
 public class FLValue {
 
     //-------------------------------------------------------------------------
-    // public static methods
+    // public private static methods
     //-------------------------------------------------------------------------
 
+    @Nullable
     public static FLValue fromData(AllocSlice slice) {
         if (slice == null) { return null; }
         final long value = fromData(slice.getHandle());
-        return value != 0 ? new FLValue(value) : null;
+        return value == 0 ? null : new FLValue(value);
     }
 
+    @NonNull
     public static FLValue fromData(byte[] data) { return new FLValue(fromTrustedData(data)); }
 
+    @Nullable
     public static Object toObject(FLValue flValue) { return flValue.asObject(); }
 
     public static String json5ToJson(String json5) throws LiteCoreException { return JSON5ToJSON(json5); }
@@ -102,6 +108,7 @@ public class FLValue {
     public Map<String, Object> asDict() { return asFLDict().asDict(); }
 
     public List<Object> asArray() { return asFLArray().asArray(); }
+    public <T> List<T> asTypedArray() { return asFLArray().asTypedArray(); }
 
     public Object asObject() {
         switch (getType(handle)) {
@@ -141,7 +148,7 @@ public class FLValue {
      * @param data FLSlice (same with slice)
      * @return long (FLValue - const struct _FLValue*)
      */
-    static native long fromTrustedData(byte[] data);
+    private static native long fromTrustedData(byte[] data);
 
     /**
      * Returns the data type of an arbitrary Value.
@@ -149,7 +156,7 @@ public class FLValue {
      * @param value FLValue
      * @return int (FLValueType)
      */
-    static native int getType(long value);
+    private static native int getType(long value);
 
     /**
      * Is this value an integer?
@@ -157,7 +164,7 @@ public class FLValue {
      * @param value FLValue
      * @return boolean
      */
-    static native boolean isInteger(long value);
+    private static native boolean isInteger(long value);
 
     /**
      * Is this a 64-bit floating-point value?
@@ -165,7 +172,7 @@ public class FLValue {
      * @param value FLValue
      * @return boolean
      */
-    static native boolean isDouble(long value);
+    private static native boolean isDouble(long value);
 
     /**
      * Returns true if the value is non-nullptr and represents an _unsigned_ integer that can only
@@ -174,7 +181,7 @@ public class FLValue {
      * @param value FLValue
      * @return boolean
      */
-    static native boolean isUnsigned(long value);
+    private static native boolean isUnsigned(long value);
 
     /**
      * Returns a value coerced to boolean.
@@ -182,7 +189,7 @@ public class FLValue {
      * @param value FLValue
      * @return boolean
      */
-    static native boolean asBool(long value);
+    private static native boolean asBool(long value);
 
     /**
      * Returns a value coerced to an unsigned integer.
@@ -190,7 +197,7 @@ public class FLValue {
      * @param value FLValue
      * @return long
      */
-    static native long asUnsigned(long value);
+    private static native long asUnsigned(long value);
 
     /**
      * Returns a value coerced to an integer.
@@ -199,7 +206,7 @@ public class FLValue {
      * @param value FLValue
      * @return long
      */
-    static native long asInt(long value);
+    private static native long asInt(long value);
 
     /**
      * Returns a value coerced to a 32-bit floating point number.
@@ -207,7 +214,7 @@ public class FLValue {
      * @param value FLValue
      * @return float
      */
-    static native float asFloat(long value);
+    private static native float asFloat(long value);
 
     /**
      * Returns a value coerced to a 64-bit floating point number.
@@ -215,7 +222,7 @@ public class FLValue {
      * @param value FLValue
      * @return double
      */
-    static native double asDouble(long value);
+    private static native double asDouble(long value);
 
     /**
      * Returns the exact contents of a string value, or null for all other types.
@@ -223,7 +230,7 @@ public class FLValue {
      * @param value FLValue
      * @return String
      */
-    static native String asString(long value) throws LiteCoreException;
+    private static native String asString(long value) throws LiteCoreException;
 
     /**
      * Returns the exact contents of a data value, or null for all other types.
@@ -231,7 +238,7 @@ public class FLValue {
      * @param value FLValue
      * @return byte[]
      */
-    static native byte[] asData(long value);
+    private static native byte[] asData(long value);
 
     /**
      * If a FLValue represents an array, returns it cast to FLArray, else nullptr.
@@ -239,7 +246,7 @@ public class FLValue {
      * @param value FLValue
      * @return long (FLArray)
      */
-    static native long asArray(long value);
+    private static native long asArray(long value);
 
     /**
      * If a FLValue represents an array, returns it cast to FLDict, else nullptr.
@@ -247,7 +254,7 @@ public class FLValue {
      * @param value FLValue
      * @return long (FLDict)
      */
-    static native long asDict(long value);
+    private static native long asDict(long value);
 
     /**
      * Converts valid JSON5 to JSON.
@@ -257,14 +264,14 @@ public class FLValue {
      * @throws LiteCoreException
      */
     @SuppressWarnings({"MethodName", "PMD.MethodNamingConventions"})
-    static native String JSON5ToJSON(String json5) throws LiteCoreException;
+    private static native String JSON5ToJSON(String json5) throws LiteCoreException;
 
-    static native long fromData(long slice);
+    private static native long fromData(long slice);
 
-    static native String toString(long handle);
+    private static native String toString(long handle);
 
-    static native String toJSON(long handle);
+    private static native String toJSON(long handle);
 
-    static native String toJSON5(long handle);
+    private static native String toJSON5(long handle);
 }
 
