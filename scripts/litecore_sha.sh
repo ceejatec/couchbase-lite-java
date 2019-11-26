@@ -12,7 +12,7 @@ shopt -s nocasematch
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 hash git 2>/dev/null || { echo >&2 "Unable to locate git, aborting..."; exit 1; }
-hash shasum 2>/dev/null || { echo >&2 "Unable to locate shasum, aborting..."; exit 1; }
+hash sha1sum 2>/dev/null || { echo >&2 "Unable to locate sha1sum, aborting..."; exit 1; }
 
 while [[ $# -gt 0 ]]; do
     key="$1"
@@ -66,7 +66,7 @@ popd > /dev/null
 
 if [[ $EDITION == EE ]]; then
     amalgamation="${second_sha}${first_sha}"
-    final_sha=`echo -n $amalgamation | shasum -a 1`
+    final_sha=`echo -n $amalgamation | sha1sum`
     final_sha=${final_sha:0:40}
 else
     final_sha="${second_sha}"
